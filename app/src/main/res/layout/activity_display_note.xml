@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@color/White"
+android:orientation="vertical" >
+
+<EditText
+    android:id="@+id/title_text"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:maxLength="29"
+    android:layout_weight="0"
+    android:inputType="textEmailSubject"
+    android:padding="2dp"
+    android:background="@color/Black"
+    android:textColor="@color/White"
+    android:shadowColor="@color/Green"
+    android:shadowDx="0"
+    android:shadowDy="0"
+    android:shadowRadius="10.11"
+    android:textColorHint="@color/Grey"
+    android:textCursorDrawable="@null"
+    android:hint = "@string/title_hint"/>
+<!-- 						   higher values for the shadowRadius result in a softer shadow. -->
+
+<EditText
+    android:id="@+id/body_text"
+    android:padding="10dp"
+    android:textCursorDrawable="@null"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Black"
+    android:textColor="@color/Green"
+    android:shadowColor="@color/Green"
+    android:shadowDx="0"
+    android:shadowDy="0"
+    android:shadowRadius="10.11"
+    android:textColorHint="@color/Grey"
+    android:layout_weight="1"
+    android:ems="10"
+    android:gravity="left|top"
+    android:inputType="textLongMessage|textMultiLine"
+    android:hint="@string/noteBody_hint"/>
+
+
+</LinearLayout>
