@@ -12,7 +12,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="test_title">Test title</string>
     <string name="title_hint">Enter your title here&#8230;</string>
-    <string name="noteBody_hint">Enter your notes here&#8230;</string>
+    <string name="noteBody_hint">Enter your notes here, notes with no title will not be saved. Using the back button will save your changes.&#8230;</string>
     <string name="title_activity_display_note">Note</string>
     <string name="welcome_message">Welcome to Noteal!</string>
     <string name="dialog_delete_note">Delete selected note?</string>

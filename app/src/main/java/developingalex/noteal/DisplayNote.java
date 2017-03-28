@@ -24,25 +24,30 @@ import android.widget.Toast;
 public class DisplayNote extends ActionBarActivity {
     private boolean creatingNewNote;
     private String noteTitle;
-    private String noteContent;
+    private String noteFile;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_note);
 
-        creatingNewNote = getIntent().getBooleanExtra(MainActivity.EXTRA_NEWNOTE, true);
+        creatingNewNote = getIntent().getBooleanExtra(MainActivity.EXTRA_NEWNOTE, true); //TODO: I
+        // believe this line is what's causing the app to crash when it's been inactive for a long
+        // duration but subsequently switched back to and then crashes. The whole process was
+        // previously killed by the Android system, but then the system brings it back to this class
+        // upon resuming and it then thinks it was just created from the user selecting it in the
+        // list but it's not so this line fails.
         if (!creatingNewNote){
             noteTitle = getIntent().getStringExtra(MainActivity.EXTRA_NOTETITLE);
-            noteContent =  getIntent().getStringExtra(MainActivity.EXTRA_NOTEFILE);
+            noteFile =  getIntent().getStringExtra(MainActivity.EXTRA_NOTEFILE);
 
 //			myToast("Loading Note...",1);
 //			myToast("noteTitle="+noteTitle,1);
-//			myToast("noteContent="+noteContent,1);
+//			myToast("noteFile="+noteFile,1);
             System.out.println("Loading Note...");
             System.out.println("noteTitle="+noteTitle);
-            System.out.println("noteContent="+ noteContent);
+            System.out.println("noteFile="+ noteFile);
 
-            ArrayList<String> note = NoteManager.loadNote(noteContent);
+            ArrayList<String> note = NoteManager.loadNote(noteFile);
             if (note.size()!=2){
                 myToast("Bad error: note was meant to be composed of title and contents, (2 things) ...didn't find 2 things..", 1);
             }else{
@@ -53,7 +58,7 @@ public class DisplayNote extends ActionBarActivity {
 //			myToast("new Note...",1);
             System.out.println("new Note...");
             noteTitle = "";
-            noteContent = "";
+            noteFile = "";
             ((EditText)findViewById(R.id.title_text)).requestFocus();
         }
     }
@@ -110,9 +115,9 @@ public class DisplayNote extends ActionBarActivity {
         }
         if (item.getItemId()==R.id.action_export){
             //baby steps, export the current note, out to the /Noteal dir and append .txt to the end of the file name and noteal- to the start
-            if(externalMediaWriteable() && noteContent.compareTo("")!= 0){
+            if(externalMediaWriteable() && noteFile.compareTo("")!= 0){
                 String content = ((EditText)findViewById(R.id.body_text)).getText().toString();
-                String filename = "noteal-"+ noteContent + ".txt";
+                String filename = "noteal-"+ noteFile + ".txt"; //TODO why is this line using noteFile instead of noteTitle?
                 File root = android.os.Environment.getExternalStorageDirectory();
                 String path = root.getAbsolutePath() + "/noteal";
                 if(exportNoteToSDCard(content, filename, path)){
@@ -160,6 +165,12 @@ public class DisplayNote extends ActionBarActivity {
 
         return true;
     }
+
+
+    /**
+     * Save the Note being displayed in the current activity to app storage.
+     * @return True if successful, False otherwise.
+     */
     private boolean saveNoteToAppStorage(){
 
 //		Take the contents and title from the GUI and save it into a new file. Also update the List file to reflect the fact we now have a new file.
@@ -185,10 +196,11 @@ public class DisplayNote extends ActionBarActivity {
 //			myToast("content: "+content.substring(0,8),1);
             System.out.println("content: "+content.substring(0,8));
         }
-        String fileName = noteContent;
-        if(creatingNewNote){//if we have to make a new note file, then try using the title as the filename
-            fileName = title;
-            //TODO if you are using the title as the filename, what happens if the user enters non valid characters in the title?
+        String fileName = noteFile;
+        if(creatingNewNote) {//if we have to make a new note file, then try using the title as the filename
+            fileName = cleanFileName(title);
+
+
 //			if fileName is already taken in the list of notes, append 1 or something...
 //			File testExistence = new File(fileName);//this line doesn't seem to work
             File testExistence = this.getBaseContext().getFileStreamPath(fileName);
@@ -196,18 +208,18 @@ public class DisplayNote extends ActionBarActivity {
             System.out.println("testing the existence of the file: "+fileName);
             while(testExistence.exists()){
                 System.out.println("File ALREADY EXISTS!!!!!!");
-                fileName = title + i;//that filename is taken so append a number to the end of it.
+                fileName = cleanFileName(title) + i;//that filename is taken so append a number to the end of it.
                 i++;
-//				testExistence = new File(fileName);
                 testExistence = this.getBaseContext().getFileStreamPath(fileName);
             }
         }
-//		construct the entire string: content: title + content;
-        String entireContent = title + String.valueOf((char)2) + content; //using 2, ascii value for "start of text"
+//		construct the entire string to write to the filesystem file: content: note_title + note_content;
+        int fileDelimiter = this.getApplicationContext().getResources().getInteger(R.integer.BYTE_VALUE_DELIMITER_FOR_SPLITTING_NOTE_FILES_TITLE_AND_CONTENT);
+        String entireContent = title + String.valueOf((char)fileDelimiter) + content;
 //		save the entire string to file with file name:fileName
         verifyStoragePermissions(this);
         myTextToFile(entireContent,fileName);
-        noteContent = fileName;
+        noteFile = fileName;
         noteTitle = title;
         //update the List file with the new addition;
         if(creatingNewNote){
@@ -218,6 +230,22 @@ public class DisplayNote extends ActionBarActivity {
         }
         return true;
     }
+
+
+
+    /**
+     * My implementation of a function to check the suitability of a given filename.
+     * For simplicity, this implementation treats only standard alphanumeric characters as valid.
+     *
+     * @param filenameToClean the name of the file that is invalid.
+     * @return the name of the file with invalid characters removed.
+     */
+    private String cleanFileName(String filenameToClean){
+        return filenameToClean.replaceAll("[^a-zA-Z0-9]","");
+    }
+
+
+
     private int myTextToFile(String content, String fileNameArg){
         try{
             FileOutputStream fos = this.getBaseContext().openFileOutput(fileNameArg, Context.MODE_PRIVATE);
