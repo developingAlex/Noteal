@@ -6,13 +6,13 @@ Android doesn't automatically come with a note taking app so I decided to try my
 
 ## How to use
 ### Creating a new note
-1. Click the top right 'kebab' menu to access the option to create a new note.
+1. Tap the top right 'kebab' menu to access the option to create a new note.
 1. When the new note loads its title and contents will be blank type something in both to have a valid note to save.
 
 ### Saving a note or changes to a note
 **(A note will not save without a title and some content)**
 There are two ways to save a note:
-- Click the top right 'kebab' menu to access the option to Save
+- Tap the top right 'kebab' menu to access the option to Save
 - Use your phones Back navigation button to return to the list of notes, the changes will be automatically saved.
 
 ### Deleting a note
@@ -21,8 +21,8 @@ Deleting a note can be done from the main list of notes view
 1. Select yes to the confirmation message.
 
 ### Exporting notes
-1. Click on the note you want to export so that you're viewing its contents
-1. Click on the top right 'kebab' menu.
+1. Tap on the note you want to export so that you're viewing its contents
+1. Tap on the top right 'kebab' menu.
 1. Select the option to export the note.
 1. A notification will popup showing you the path to your note, a note will be available from the *noteal* directory in your SDCards root directory.
   - If you had a title of *shopping* for a note you exported, then you should be able to find it at /noteal/noteal-shopping.txt
