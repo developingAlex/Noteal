@@ -1,8 +1,7 @@
 <resources>
-
     <!-- Final Variables: -->
-    <string name="notelist_file">notelist.txt</string>
     <string name="app_name">Noteal</string>
+    <string name="notelist_file">notelist.txt</string>
 
     <!-- GUI Strings: -->
     <string name="action_settings">Settings</string>

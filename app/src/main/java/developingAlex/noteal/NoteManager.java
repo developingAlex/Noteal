@@ -1,4 +1,4 @@
-package developingalex.noteal;
+package developingAlex.noteal;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -1,8 +1,8 @@
-package developingalex.noteal;
+package developingAlex.noteal;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import java.util.ArrayList;
@@ -15,10 +15,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class MainActivity extends ActionBarActivity implements DialogInterface.OnClickListener {
-    public static final String EXTRA_NEWNOTE = "com.example.Noteal1.NEWNOTE";
-    public static final String EXTRA_NOTETITLE = "com.example.Noteal1.NOTETITLE";
-    public static final String EXTRA_NOTEFILE = "com.example.Noteal1.NOTEFILE";
+public class MainActivity extends AppCompatActivity implements DialogInterface.OnClickListener {
+    public static final String EXTRA_NEWNOTE = "developingAlex.noteal.NEWNOTE";
+    public static final String EXTRA_NOTETITLE = "developingAlex.noteal.NOTETITLE";
+    public static final String EXTRA_NOTEFILE = "developingAlex.noteal.NOTEFILE";
     public static Color colorOfBackground;
     public static Color colorOfText;
     private static int noteToDelete = -1;
@@ -43,33 +43,31 @@ public class MainActivity extends ActionBarActivity implements DialogInterface.O
         lv.setCacheColorHint(getResources().getColor(R.color.Green));
         lv.setDrawSelectorOnTop(true);
         lv.setLongClickable(true);
-        lv.setOnItemLongClickListener(new
-                                              AdapterView.OnItemLongClickListener() {
-                                                  @Override
-                                                  public boolean onItemLongClick(AdapterView<?> av, View v, int pos, long id) {
-                                                      return onLongListItemClick(v, pos, id);
-                                                  }
-                                              });
-        lv.setOnItemClickListener(new
-                                          AdapterView.OnItemClickListener() {
-                                              @Override
-                                              public void onItemClick(AdapterView<?> av, View v, int pos, long id) {
-                                                  onListItemClick(lv, v, pos, id);
-                                              }
-                                          });
+        lv.setOnItemLongClickListener(
+            new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> av, View v, int pos, long id) {
+                  return onLongListItemClick(v, pos, id);
+                }
+            });
+        lv.setOnItemClickListener(
+            new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> av, View v, int pos, long id) {
+                    onListItemClick(lv, v, pos, id);
+                }
+            });
         updateList();
     }
 
     public void updateList() {
         lv.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.my_list_layout, getNotesTitles(NoteManager.getNotesArray())));
+            R.layout.my_list_layout, getNotesTitles(NoteManager.getNotesArray())));
     }
 
 
     private ArrayList<String> getNotesTitles(ArrayList<String> x){
-        if(x==null)
-            return null;
-        if(x.isEmpty())
+        if(x==null || x.isEmpty())
             return x;
         ArrayList<String> y = new ArrayList<String>();
         int i;
@@ -101,8 +99,9 @@ public class MainActivity extends ActionBarActivity implements DialogInterface.O
     //when the user holds down on a note in the list of notes:
     protected boolean onLongListItemClick(View v, int pos, long id){
         //bring up the dialog box to confirm deletion.
+        String title = getNotesTitles(NoteManager.getNotesArray()).get(pos);
         AlertDialog ad = new AlertDialog.Builder(this)
-                .setMessage(R.string.dialog_delete_note)
+                .setMessage("Delete the note: " + title)
                 .setIcon(R.drawable.ic_launcher)
                 .setTitle(R.string.dialog_delete_title)
                 .setPositiveButton("Yes", this)
@@ -120,7 +119,7 @@ public class MainActivity extends ActionBarActivity implements DialogInterface.O
         switch(which){
             case DialogInterface.BUTTON_POSITIVE: //yes
                 if(noteToDelete != -1){
-                    myToast("Deleted..",1);
+                    myToast("Deleted "+getNotesTitles(NoteManager.getNotesArray()).get(noteToDelete),1);
                     deleteNote(noteToDelete);
                 }
                 break;

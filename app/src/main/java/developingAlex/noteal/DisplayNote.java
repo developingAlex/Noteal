@@ -1,4 +1,4 @@
-package developingalex.noteal;
+package developingAlex.noteal;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,14 +14,16 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.ActionBarActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class DisplayNote extends ActionBarActivity {
+public class DisplayNote extends AppCompatActivity {
     private boolean creatingNewNote;
     private String noteTitle;
     private String noteFile;
@@ -79,7 +81,7 @@ public class DisplayNote extends ActionBarActivity {
      */
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permission = ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
             // We don't have permission so prompt the user
