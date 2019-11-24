@@ -133,7 +133,14 @@ public class DisplayNote extends AppCompatActivity {
             if(externalMediaWriteable() && noteFile.compareTo("")!= 0){
                 String content = ((EditText)findViewById(R.id.body_text)).getText().toString();
                 String title = ((EditText)findViewById(R.id.title_text)).getText().toString();
-                String filename = "noteal-"+ cleanFileName(title) + ".txt";
+                String proposedExportedFilename = cleanFileName(title);
+                if(proposedExportedFilename.compareTo("") == 0){
+                    myToast("Cannot export note with that title, please change title to " +
+                            "consist of simple english characters and numbers", 2);
+                    return true;
+                }
+                //TODO: prompt user to overwrite any existing file with same filename
+                String filename = "noteal-"+ proposedExportedFilename + ".txt";
                 File root = android.os.Environment.getExternalStorageDirectory();
                 String path = root.getAbsolutePath() + "/noteal";
                 if(exportNoteToSDCard(content, filename, path)){
