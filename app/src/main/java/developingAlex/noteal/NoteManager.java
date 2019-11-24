@@ -11,19 +11,24 @@ import android.content.Context;
 import android.widget.Toast;
 
 public final class NoteManager {
+
     private static ArrayList<String> notesArray;
     private static Context MainActivityContext;
     private static MainActivity mainActivity;
     final static int DELIMITER_BYTE_VALUE_FOR_NOTE_FILES = 2; //separates title from content, one per note file.
+
 
     public NoteManager (Context cx, MainActivity ma){
         MainActivityContext = cx;
         notesArray = loadNotesArray();
         mainActivity = ma;
     }
+
+
     public static Context getContext(){
         return MainActivityContext;
     }
+
 
     public static void updateTitle(String filename, String newTitle){
         //find which filename/note it's talking about and then update the title.
@@ -38,14 +43,18 @@ public final class NoteManager {
         }
     }
 
+
     public static void updateTitle(int position, String newTitle){
         notesArray.set(position, newTitle);
         saveIndexToFile();
         mainActivity.updateList();
     }
+
+
     public static ArrayList<String> getNotesArray(){
         return notesArray;
     }
+
 
     /**
      * Adds a new entry to the list of Notes that appears on the main activity and updates that list.
@@ -83,8 +92,11 @@ public final class NoteManager {
         }else
             myToast("couldn't find the file to delete!",1);
     }
+
+
     private static void saveIndexToFile(){
-        //Save the list out to file(using valueof(28) to separate titles and filenames and using the correct filename.
+        //Save the list out to file(using valueof(28) (the asci decimal code for the file
+        // separator character) to separate titles and filenames and using the correct filename.
         String file = MainActivityContext.getString(R.string.notelist_file);
         String fileContent="";
         for(int i = 0; i<notesArray.size();i+=2){
@@ -101,6 +113,7 @@ public final class NoteManager {
 //				System.out.println("this is what is being written to the noteslist.txt file:");
 //				System.out.println(fileContent);
     }
+
 
     private static int myTextToFile(String content, String fileNameArg){
         try{
@@ -122,6 +135,7 @@ public final class NoteManager {
 
         return 0;
     }
+
 
     /**
      * loadNote takes a filename argument and attempts to open and read the contents of that
@@ -223,7 +237,6 @@ public final class NoteManager {
             return list;
         }
         if(!list.isEmpty() && list.size()%2==0){
-//			myToast("Noteslist file was valid, size:"+list.size(),1);
             System.out.println("Noteslist file was valid, size:"+list.size());
         }else{
             if(list.isEmpty()){
@@ -233,13 +246,10 @@ public final class NoteManager {
                 myToast("Corrupt Index File[odd number]",2);
             }
         }
-//		debug:
-//		int i;
-//		for(i=0; i<list.size();i++){
-//			System.out.println("list.get(i):"+list.get(i));
-//		}
         return list;
     }
+
+
     private static void myToast(String msg, int length_of_time){
         if (length_of_time==2){
             Toast.makeText(MainActivityContext, msg, Toast.LENGTH_LONG).show();
@@ -248,4 +258,5 @@ public final class NoteManager {
             Toast.makeText(MainActivityContext, msg, Toast.LENGTH_SHORT).show();
         }
     }
+
 }

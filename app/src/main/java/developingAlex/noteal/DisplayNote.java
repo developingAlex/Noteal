@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import android.Manifest;
 import android.app.Activity;
@@ -24,9 +25,19 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class DisplayNote extends AppCompatActivity {
+
     private boolean creatingNewNote;
     private String noteTitle;
     private String noteFile;
+
+    // Storage Permissions
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,12 +76,6 @@ public class DisplayNote extends AppCompatActivity {
         }
     }
 
-    // Storage Permissions
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
 
     /**
      * Checks if the app has permission to write to device storage
@@ -93,12 +98,14 @@ public class DisplayNote extends AppCompatActivity {
         }
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.display_note, menu);
         return true;
     }
+
 
     public void onBackPressed(){
         String title = ((EditText)findViewById(R.id.title_text)).getText().toString();
@@ -109,6 +116,13 @@ public class DisplayNote extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
+
+
+    private String cleanFileName(String filenameToClean){
+        return filenameToClean.replaceAll("[^a-zA-Z0-9]","");
+    }
+
+
     public boolean onOptionsItemSelected(MenuItem item){
         if (item.getItemId()==R.id.action_save){
             if(saveNoteToAppStorage()==false){
@@ -116,10 +130,10 @@ public class DisplayNote extends AppCompatActivity {
             }
         }
         if (item.getItemId()==R.id.action_export){
-            //baby steps, export the current note, out to the /Noteal dir and append .txt to the end of the file name and noteal- to the start
             if(externalMediaWriteable() && noteFile.compareTo("")!= 0){
                 String content = ((EditText)findViewById(R.id.body_text)).getText().toString();
-                String filename = "noteal-"+ noteFile + ".txt"; //TODO why is this line using noteFile instead of noteTitle?
+                String title = ((EditText)findViewById(R.id.title_text)).getText().toString();
+                String filename = "noteal-"+ cleanFileName(title) + ".txt";
                 File root = android.os.Environment.getExternalStorageDirectory();
                 String path = root.getAbsolutePath() + "/noteal";
                 if(exportNoteToSDCard(content, filename, path)){
@@ -129,6 +143,7 @@ public class DisplayNote extends AppCompatActivity {
         }
         return true; //return false to allow normal menu processing to proceed, true to consume it here.
     }
+
 
     //return true if able to write to external media, false if not.
     private boolean externalMediaWriteable(){
@@ -141,6 +156,7 @@ public class DisplayNote extends AppCompatActivity {
             return false;
         }
     }
+
 
     //writes the string con out to the file specified by path on the sdcard
     //return true on success,
@@ -177,7 +193,6 @@ public class DisplayNote extends AppCompatActivity {
 
 //		Take the contents and title from the GUI and save it into a new file. Also update the List file to reflect the fact we now have a new file.
         String title = ((EditText)findViewById(R.id.title_text)).getText().toString();
-//		myToast("title: "+title, 1);
         if(title.compareTo("") == 0){
             System.out.println("You need a title to save!");
             myToast("You need a title to save!",1);
@@ -200,7 +215,7 @@ public class DisplayNote extends AppCompatActivity {
         }
         String fileName = noteFile;
         if(creatingNewNote) {//if we have to make a new note file, then try using the title as the filename
-            fileName = cleanFileName(title);
+            fileName = UUID.randomUUID().toString();
 
 
 //			if fileName is already taken in the list of notes, append 1 or something...
@@ -210,7 +225,7 @@ public class DisplayNote extends AppCompatActivity {
             System.out.println("testing the existence of the file: "+fileName);
             while(testExistence.exists()){
                 System.out.println("File ALREADY EXISTS!!!!!!");
-                fileName = cleanFileName(title) + i;//that filename is taken so append a number to the end of it.
+                fileName = UUID.randomUUID().toString(); // that filename is taken so generate another
                 i++;
                 testExistence = this.getBaseContext().getFileStreamPath(fileName);
             }
@@ -234,20 +249,6 @@ public class DisplayNote extends AppCompatActivity {
     }
 
 
-
-    /**
-     * My implementation of a function to check the suitability of a given filename.
-     * For simplicity, this implementation treats only standard alphanumeric characters as valid.
-     *
-     * @param filenameToClean the name of the file that is invalid.
-     * @return the name of the file with invalid characters removed.
-     */
-    private String cleanFileName(String filenameToClean){
-        return filenameToClean.replaceAll("[^a-zA-Z0-9]","");
-    }
-
-
-
     private int myTextToFile(String content, String fileNameArg){
         try{
             FileOutputStream fos = this.getBaseContext().openFileOutput(fileNameArg, Context.MODE_PRIVATE);
@@ -266,6 +267,7 @@ public class DisplayNote extends AppCompatActivity {
 
         return 0;
     }
+
 
     private void myToast(String msg, int length_of_time){
         if (length_of_time==2){
