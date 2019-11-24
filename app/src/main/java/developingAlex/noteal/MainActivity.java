@@ -1,6 +1,5 @@
 package developingAlex.noteal;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
@@ -16,15 +15,14 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements DialogInterface.OnClickListener {
+
     public static final String EXTRA_NEWNOTE = "developingAlex.noteal.NEWNOTE";
     public static final String EXTRA_NOTETITLE = "developingAlex.noteal.NOTETITLE";
     public static final String EXTRA_NOTEFILE = "developingAlex.noteal.NOTEFILE";
-    public static Color colorOfBackground;
-    public static Color colorOfText;
-    private static int noteToDelete = -1;
-    //private static ArrayList<String> notesArray;
+    private static int indexOfNoteToDelete = -1;
     public NoteManager nm;
     private ListView lv;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +33,6 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
 
         //pull in the list of note files and titles to display in the list of notes.
 //		Call to read from the set file and return an array.
-
 
 
         lv = (ListView) this.findViewById(R.id.list);
@@ -60,30 +57,39 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         updateList();
     }
 
+
     public void updateList() {
         lv.setAdapter(new ArrayAdapter<String>(this,
             R.layout.my_list_layout, getNotesTitles(NoteManager.getNotesArray())));
     }
 
 
-    private ArrayList<String> getNotesTitles(ArrayList<String> x){
-        if(x==null || x.isEmpty())
-            return x;
-        ArrayList<String> y = new ArrayList<String>();
+    private ArrayList<String> getNotesTitles(ArrayList<String> listOfNoteTitlesAndContents){
+//        It is expected that the String array passed into this function will be of the form:
+//        [note_1_title, note_1_content, note_2_title, note_2_content, …, note_n_title, note_n_content]
+        if (listOfNoteTitlesAndContents.size() % 2 != 0) throw new AssertionError(
+                "getNotesTitles expects an array of note title," +
+                        "content pairs but got an array of odd length");
+        if(listOfNoteTitlesAndContents==null || listOfNoteTitlesAndContents.isEmpty())
+            return listOfNoteTitlesAndContents;
+        ArrayList<String> titles = new ArrayList<String>();
         int i;
-        for (i=0; i<x.size(); i+=2){
-            y.add(x.get(i));
-            System.out.println("Pulling titles from notesarray, got:"+x.get(i));
+        for (i=0; i<listOfNoteTitlesAndContents.size(); i+=2){
+            titles.add(listOfNoteTitlesAndContents.get(i));
         }
-        return y;
+        return titles;
     }
-    public void onBackPressed(){
-        moveTaskToBack(true);
 
+
+    public void onBackPressed(){
+        // close app if back button pressed on this main screen,
+        // DON'T go back into any previously viewed note.
+        moveTaskToBack(true);
     }
+
+
     //when the user taps a note in the list of notes
     protected void onListItemClick(ListView l, View v, int position, long id){
-        //super.onListItemClick(l, v, position, id);
         Object o = lv.getAdapter().getItem(position);
         String noteTitle = o.toString();
         String noteFile = NoteManager.getNotesArray().get((position*2)+1);
@@ -95,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         intent.putExtra(EXTRA_NOTEFILE, noteFile);
         startActivity(intent);
     }
+
 
     //when the user holds down on a note in the list of notes:
     protected boolean onLongListItemClick(View v, int pos, long id){
@@ -109,24 +116,22 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
                 .setCancelable(false)
                 .create();
         ad.show();
-        noteToDelete=pos;
+        indexOfNoteToDelete = pos;
         return true;
     }
+
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
         // TODO Auto-generated method stub
         switch(which){
             case DialogInterface.BUTTON_POSITIVE: //yes
-                if(noteToDelete != -1){
-                    myToast("Deleted "+getNotesTitles(NoteManager.getNotesArray()).get(noteToDelete),1);
-                    deleteNote(noteToDelete);
+                if(indexOfNoteToDelete != -1){
+                    myToast("Deleted "+getNotesTitles(NoteManager.getNotesArray()).get(indexOfNoteToDelete),1);
+                    deleteNote(indexOfNoteToDelete);
                 }
                 break;
             case DialogInterface.BUTTON_NEGATIVE: //no
-                break;
-            case DialogInterface.BUTTON_NEUTRAL: //nuetered //unnecessary
-                myToast("Please select yes or no",1);
                 break;
             default:
                 // nothing
@@ -152,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         return true;
     }
 
+
     public boolean onOptionsItemSelected(MenuItem item){
         if (item.getItemId()==R.id.action_add){
 //			Show the next activity with blank inputs
@@ -174,39 +180,4 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         }
     }
 
-
-
-
 }
-
-
-    /*
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-}
-*/
