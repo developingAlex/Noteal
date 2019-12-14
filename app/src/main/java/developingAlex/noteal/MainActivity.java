@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         String title = getNotesTitles(NoteManager.getNotesArray()).get(pos);
         AlertDialog ad = new AlertDialog.Builder(this)
                 .setMessage("Delete the note: " + title)
-                .setIcon(R.drawable.ic_launcher)
+                .setIcon(R.drawable.ic_noteal_foreground)
                 .setTitle(R.string.dialog_delete_title)
                 .setPositiveButton("Yes", this)
                 .setNegativeButton("No", this)
