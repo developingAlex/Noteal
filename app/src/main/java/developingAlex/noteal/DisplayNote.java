@@ -30,12 +30,6 @@ public class DisplayNote extends AppCompatActivity {
     private String noteTitle;
     private String noteFile;
 
-    // Storage Permissions
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
 
 
     @Override
@@ -73,28 +67,6 @@ public class DisplayNote extends AppCompatActivity {
             noteTitle = "";
             noteFile = "";
             ((EditText)findViewById(R.id.title_text)).requestFocus();
-        }
-    }
-
-
-    /**
-     * Checks if the app has permission to write to device storage
-     *
-     * If the app does not have permission then the user will be prompted to grant permissions
-     *
-     * @param activity
-     */
-    public static void verifyStoragePermissions(Activity activity) {
-        // Check if we have write permission
-        int permission = ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
-            );
         }
     }
 
@@ -141,11 +113,7 @@ public class DisplayNote extends AppCompatActivity {
                 }
                 //TODO: prompt user to overwrite any existing file with same filename
                 String filename = "noteal-"+ proposedExportedFilename + ".txt";
-                File root = android.os.Environment.getExternalStorageDirectory();
-                String path = root.getAbsolutePath() + "/noteal";
-                if(exportNoteToSDCard(content, filename, path)){
-                    myToast("Note saved to: "+path+"/"+filename,2);
-                }
+                exportNoteToSDCard(content, filename);
             }
         }
         return true; //return false to allow normal menu processing to proceed, true to consume it here.
@@ -164,15 +132,11 @@ public class DisplayNote extends AppCompatActivity {
         }
     }
 
-
     //writes the string con out to the file specified by path on the sdcard
     //return true on success,
     //print problem and return false on failure.
-    private boolean exportNoteToSDCard(String con, String filename, String path){
-
-        File dir = new File(path);
-        dir.mkdirs();
-        File file = new File(dir, filename);
+    private boolean exportNoteToSDCard(String con, String filename){
+        File file = new File(this.getBaseContext().getExternalFilesDir(null), filename);
         try{
             FileOutputStream f = new FileOutputStream(file);
             PrintWriter pw = new PrintWriter(f);
@@ -180,8 +144,11 @@ public class DisplayNote extends AppCompatActivity {
             pw.flush();
             pw.close();
             f.close();
+            myToast("Note saved to: " + file.getAbsolutePath(),2);
         }catch(FileNotFoundException e){
-            myToast("Do not have permission to write to SD Card.",1);
+            // remnant logic from when permissions mattered, may not be required any more?
+            myToast("Error writing to file...",1);
+            myToast(e.getMessage(),2);
             return false;
         }catch(IOException e){
             myToast("There was an IO error",1);
@@ -241,7 +208,6 @@ public class DisplayNote extends AppCompatActivity {
         int fileDelimiter = this.getApplicationContext().getResources().getInteger(R.integer.BYTE_VALUE_DELIMITER_FOR_SPLITTING_NOTE_FILES_TITLE_AND_CONTENT);
         String entireContent = title + String.valueOf((char)fileDelimiter) + content;
 //		save the entire string to file with file name:fileName
-        verifyStoragePermissions(this);
         myTextToFile(entireContent,fileName);
         noteFile = fileName;
         noteTitle = title;
