@@ -194,21 +194,22 @@ public final class NoteManager {
         try{
             System.out.println("trying to open notelistfile: "+file);
             FileInputStream fis = MainActivityContext.openFileInput(file);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fis, "UTF8"));
             System.out.println("about to read");
-            int next = fis.read();
+            int next = bufferedReader.read();
             System.out.println("fis.read():"+next+"="+String.valueOf((char)next));
             System.out.println("read a byte!");
             while (next != -1){//loop to read to the end of the file
                 String noteTitle = "";
                 while (next != 28 && next != -1){//loop to read to till the next "file separator" character or eof
                     noteTitle += String.valueOf((char)next);
-                    next = fis.read();
+                    next = bufferedReader.read();
 //					debug:
 //					System.out.println("fis.read():"+next+"="+String.valueOf((char)next));
                 }
                 if (next == -1)
                     break;
-                next = fis.read();
+                next = bufferedReader.read();
 //				debug:
 //				System.out.println("fis.read():"+next+"="+String.valueOf((char)next));
                 if (next == -1)
@@ -216,7 +217,7 @@ public final class NoteManager {
                 String noteFile = "";
                 while (next != 28 && next != -1){ //loop to read to till the next "file separator" character or eof
                     noteFile += String.valueOf((char)next);
-                    next = fis.read();
+                    next = bufferedReader.read();
 //					debug:
 //					System.out.println("fis.read():"+next+"="+String.valueOf((char)next));
                 }
@@ -227,7 +228,7 @@ public final class NoteManager {
                 System.out.println("adding to list:"+noteFile);
                 if (next == -1)
                     break;
-                next = fis.read();
+                next = bufferedReader.read();
             }
             fis.close();
         }
