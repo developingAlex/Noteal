@@ -117,30 +117,35 @@ public class DisplayNote extends AppCompatActivity {
      * @return true to close the menu, false to keep it open
      */
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_save) {
-            saveNoteToAppStorage();
-        }
-        if (item.getItemId() == R.id.action_export) {
-            if (externalMediaWritable() && noteFile.compareTo("") != 0) {
-                String content = ((EditText)findViewById(R.id.body_text))
-                        .getText()
-                        .toString();
-                String title = ((EditText)findViewById(R.id.title_text))
-                        .getText()
-                        .toString();
-                String proposedExportedFilename = cleanFileName(title);
-                if(proposedExportedFilename.compareTo("") == 0){
-                    myToast("Cannot export note with that title, please " +
-                            "change title to consist of simple english " +
-                            "characters and numbers",
-                            2);
-                    return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+            case R.id.action_save:
+                saveNoteToAppStorage();
+                return true;
+            case R.id.action_export:
+                if (externalMediaWritable() && noteFile.compareTo("") != 0) {
+                    String content = ((EditText) findViewById(R.id.body_text))
+                            .getText()
+                            .toString();
+                    String title = ((EditText) findViewById(R.id.title_text))
+                            .getText()
+                            .toString();
+                    String proposedExportedFilename = cleanFileName(title);
+                    if (proposedExportedFilename.compareTo("") == 0) {
+                        myToast("Cannot export note with that title, please " +
+                                        "change title to consist of simple english " +
+                                        "characters and numbers",
+                                2);
+                        return true;
+                    }
+                    // TODO: prompt user to overwrite any existing file with same
+                    //  filename
+                    String filename = "noteal-" + proposedExportedFilename + ".txt";
+                    exportNoteToSDCard(content, filename);
                 }
-                // TODO: prompt user to overwrite any existing file with same
-                //  filename
-                String filename = "noteal-" + proposedExportedFilename + ".txt";
-                exportNoteToSDCard(content, filename);
-            }
+                return true;
         }
         return true;
     }
