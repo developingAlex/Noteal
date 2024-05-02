@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -36,8 +37,8 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
 
 
         lv = (ListView) this.findViewById(R.id.list);
-        lv.setBackgroundColor(getResources().getColor(R.color.Black));
-        lv.setCacheColorHint(getResources().getColor(R.color.Green));
+        lv.setBackgroundColor(ContextCompat.getColor(this.getBaseContext(), R.color.Black));
+        lv.setCacheColorHint(ContextCompat.getColor(this.getBaseContext(), R.color.Green));
         lv.setDrawSelectorOnTop(true);
         lv.setLongClickable(true);
         lv.setOnItemLongClickListener(
