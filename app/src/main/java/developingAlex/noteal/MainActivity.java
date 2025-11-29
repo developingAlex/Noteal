@@ -37,8 +37,8 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
 
 
         lv = (ListView) this.findViewById(R.id.list);
-        lv.setBackgroundColor(ContextCompat.getColor(this.getBaseContext(), R.color.Black));
-        lv.setCacheColorHint(ContextCompat.getColor(this.getBaseContext(), R.color.Green));
+        lv.setBackgroundColor(ContextCompat.getColor(this.getBaseContext(), R.color.White));
+        lv.setCacheColorHint(ContextCompat.getColor(this.getBaseContext(), R.color.Black));
         lv.setDrawSelectorOnTop(true);
         lv.setLongClickable(true);
         lv.setOnItemLongClickListener(
