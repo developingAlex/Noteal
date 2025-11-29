@@ -176,11 +176,11 @@ public class DisplayNote extends AppCompatActivity {
      *
      * This allows it to be more easily accessible to the user.
      *
-     * @param con contents of the file
+     * @param content contents of the file
      * @param filename filename to use for the new file
      * @return true on success, Toast the problem and return false on failure
      */
-    private boolean exportNoteToSDCard(String con, String filename) {
+    private boolean exportNoteToSDCard(String content, String filename) {
 
         File file = new File(
                 this.getBaseContext().getExternalFilesDir(null),
@@ -188,7 +188,7 @@ public class DisplayNote extends AppCompatActivity {
         try {
             FileOutputStream f = new FileOutputStream(file);
             PrintWriter pw = new PrintWriter(f);
-            pw.println(con);
+            pw.println(content);
             pw.flush();
             pw.close();
             f.close();
@@ -209,7 +209,12 @@ public class DisplayNote extends AppCompatActivity {
 
     /**
      * Save the Note being displayed in the current activity to application-
-     * specific internal storage.
+     * specific internal storage. (this is some storage only accessible to
+     * the app, I don't think you can see it even when plugging the phone
+     * into a computer with a usb cable and filesharing mode enabled, a
+     * little confusing because we have the function exportNoteToSDCard which
+     * states also that it exports to app-specific storage which means inside
+     * the phones /android/data/ folder )
      *
      * Take the contents and title from the GUI and save it into a new file.
      * Also update the List file to reflect the fact we now have a new file.

@@ -68,3 +68,4 @@ Deleting a note can be done from the main list of notes view
   in the on screen keyboard sliding up from the bottom, which inadvertantly
   pushes the top bar of the view being pushed up and out of the view and as
   such you lose the access to the buttons of copy, cut and paste.
+- project should have a linter/formatter configured
