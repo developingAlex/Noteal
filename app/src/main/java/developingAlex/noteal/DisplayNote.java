@@ -43,8 +43,8 @@ public class DisplayNote extends AppCompatActivity {
                     MainActivity.EXTRA_NOTEFILE);
 
             System.out.println("Loading Note...");
-            System.out.println("noteTitle=" + noteTitle);
-            System.out.println("noteFile=" + noteFile);
+            System.out.println("noteTitle = " + noteTitle);
+            System.out.println("noteFile = " + noteFile);
 
             ArrayList<String> note = NoteManager.loadNote(noteFile);
             if (note.size() != 2) {
@@ -105,7 +105,7 @@ public class DisplayNote extends AppCompatActivity {
      * @param filenameToClean
      * @return a 'cleaned' version of the filename
      */
-    private String cleanFileName(String filenameToClean) {
+    public static String cleanFileName(String filenameToClean) {
         return filenameToClean.replaceAll("[^a-zA-Z0-9]", "");
     }
 
@@ -143,7 +143,16 @@ public class DisplayNote extends AppCompatActivity {
                     // TODO: prompt user to overwrite any existing file with same
                     //  filename
                     String filename = "noteal-" + proposedExportedFilename + ".txt";
-                    exportNoteToSDCard(content, filename);
+                    File file = new File(
+                            this.getBaseContext().getExternalFilesDir(null),
+                            filename
+                    );
+                    String result = exportNoteToSDCard(content, file);
+                    if (result == "success") {
+                        myToast("Note saved to: " + file.getAbsolutePath(), 2);
+                    } else {
+                        myToast(result, 2);
+                    }
                 }
                 return true;
         }
@@ -177,14 +186,14 @@ public class DisplayNote extends AppCompatActivity {
      * This allows it to be more easily accessible to the user.
      *
      * @param content contents of the file
-     * @param filename filename to use for the new file
-     * @return true on success, Toast the problem and return false on failure
+     * @param file the file to use
+     * @return String message indicating success or failure
      */
-    private boolean exportNoteToSDCard(String content, String filename) {
+    public static String exportNoteToSDCard(String content, File file) {
 
-        File file = new File(
-                this.getBaseContext().getExternalFilesDir(null),
-                filename);
+//        File file = new File(
+//                getApplicationContext().getExternalFilesDir(null),
+//                filename);
         try {
             FileOutputStream f = new FileOutputStream(file);
             PrintWriter pw = new PrintWriter(f);
@@ -192,18 +201,14 @@ public class DisplayNote extends AppCompatActivity {
             pw.flush();
             pw.close();
             f.close();
-            myToast("Note saved to: " + file.getAbsolutePath(), 2);
         } catch (FileNotFoundException e) {
             // remnant logic from when permissions mattered,
             // may not be required any more?
-            myToast("Error writing to file...", 1);
-            myToast(e.getMessage(), 2);
-            return false;
+            return "error: FileNotFoundException: " + e.getMessage();
         } catch (IOException e) {
-            myToast("There was an IO error", 1);
-            return false;
+            return "error: IOException: " + e.getMessage();
         }
-        return true;
+        return "success";
     }
 
 

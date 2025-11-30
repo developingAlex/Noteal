@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
             return listOfNoteTitlesAndContents;
         ArrayList<String> titles = new ArrayList<String>();
         int i;
-        for (i=0; i<listOfNoteTitlesAndContents.size(); i+=2){
+        for (i = 0; i < listOfNoteTitlesAndContents.size(); i += 2){
             titles.add(listOfNoteTitlesAndContents.get(i));
         }
         return titles;
@@ -93,9 +93,9 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     protected void onListItemClick(ListView l, View v, int position, long id){
         Object o = lv.getAdapter().getItem(position);
         String noteTitle = o.toString();
-        String noteFile = NoteManager.getNotesArray().get((position*2)+1);
-        System.out.println("You selected: "+ noteTitle);
-        System.out.println("which uses the file: "+ noteFile);
+        String noteFile = NoteManager.getNotesArray().get((position * 2) + 1);
+        System.out.println("You selected: " + noteTitle);
+        System.out.println("which uses the file: " + noteFile);
         Intent intent = new Intent(this, DisplayNote.class);
         intent.putExtra(EXTRA_NEWNOTE, false);//false: load it from it's file.
         intent.putExtra(EXTRA_NOTETITLE, noteTitle);
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         switch(which){
             case DialogInterface.BUTTON_POSITIVE: //yes
                 if(indexOfNoteToDelete != -1){
-                    myToast("Deleted "+getNotesTitles(NoteManager.getNotesArray()).get(indexOfNoteToDelete),1);
+                    myToast("Deleted " + getNotesTitles(NoteManager.getNotesArray()).get(indexOfNoteToDelete),1);
                     deleteNote(indexOfNoteToDelete);
                 }
                 break;
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
 
 
 
-    //method to call to delete a note at a certain location in the list, list starts at position:0
+    //method to call to delete a note at a certain location in the list, list starts at position 0
     private void deleteNote(int listPosition){
         //remove from the note list and update the view, remove from the index file and delete off file system.
         NoteManager.removeNote(listPosition);

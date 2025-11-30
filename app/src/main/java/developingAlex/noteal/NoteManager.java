@@ -2,9 +2,12 @@ package developingAlex.noteal;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.lang.reflect.Array;
+import java.time.LocalDateTime;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import android.content.Context;
@@ -38,6 +41,25 @@ public final class NoteManager {
             if (notesArray.get(i).compareTo(filename) == 0){
                 updateTitle(i - 1, newTitle);
                 break;
+            }
+        }
+    }
+
+    public static void exportAllNotes() {
+        DateTimeFormatter stampFormat = DateTimeFormatter.ofPattern("uuuuMMddHHmmss"); // eg 20251130205923
+        String timeStamp = LocalDateTime.now().format(stampFormat);
+        for (int i = 0; i < notesArray.size(); i += 2 ){
+            // i = note title, i+1 = note filename holding the contents..
+            ArrayList<String> note = loadNote(notesArray.get(i + 1));
+            String fileName = DisplayNote.cleanFileName(note.get(0));
+            fileName += ("_" + timeStamp);
+            String fileContent = note.get(1);
+            File file = new File(MainActivityContext.getExternalFilesDir(null), fileName);
+            String result = DisplayNote.exportNoteToSDCard(fileContent, file);
+            if (result == "success") {
+                System.out.println("exported note to " + file.getAbsolutePath());
+            } else {
+                System.out.println(result);
             }
         }
     }
