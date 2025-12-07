@@ -8,6 +8,7 @@
     <string name="action_add">New Note</string>
     <string name="action_save">Save</string>
     <string name="action_export">Export Note</string>
+    <string name="action_export_all">Export All Notes</string>
     <string name="hello_world">Hello world!</string>
     <string name="test_title">Test title</string>
     <string name="title_hint">Enter your title here&#8230;</string>

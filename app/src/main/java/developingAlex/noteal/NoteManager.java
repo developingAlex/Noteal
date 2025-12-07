@@ -52,7 +52,7 @@ public final class NoteManager {
             // i = note title, i+1 = note filename holding the contents..
             ArrayList<String> note = loadNote(notesArray.get(i + 1));
             String fileName = DisplayNote.cleanFileName(note.get(0));
-            fileName += ("_" + timeStamp);
+            fileName = (timeStamp + "_" + fileName + ".txt");
             String fileContent = note.get(1);
             File file = new File(MainActivityContext.getExternalFilesDir(null), fileName);
             String result = DisplayNote.exportNoteToSDCard(fileContent, file);

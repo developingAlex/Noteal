@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements DialogInterface.OnClickListener {
 
-    public static final String EXTRA_NEWNOTE = "developingAlex.noteal.NEWNOTE";
+    public static final String EXTRA_IS_NEW_NOTE = "developingAlex.noteal.ISNEWNOTE";
     public static final String EXTRA_NOTETITLE = "developingAlex.noteal.NOTETITLE";
     public static final String EXTRA_NOTEFILE = "developingAlex.noteal.NOTEFILE";
     private static int indexOfNoteToDelete = -1;
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         System.out.println("You selected: " + noteTitle);
         System.out.println("which uses the file: " + noteFile);
         Intent intent = new Intent(this, DisplayNote.class);
-        intent.putExtra(EXTRA_NEWNOTE, false);//false: load it from it's file.
+        intent.putExtra(EXTRA_IS_NEW_NOTE, false);//false: load it from it's file.
         intent.putExtra(EXTRA_NOTETITLE, noteTitle);
         intent.putExtra(EXTRA_NOTEFILE, noteFile);
         startActivity(intent);
@@ -164,9 +164,11 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
 //			Show the next activity with blank inputs
 
             Intent intent = new Intent(this, DisplayNote.class);
-            intent.putExtra(EXTRA_NEWNOTE, true); //true: it's a new note
+            intent.putExtra(EXTRA_IS_NEW_NOTE, true); //true: it's a new note
             startActivity(intent);
-            return true;
+        }
+        else if (item.getItemId()==R.id.action_export_all){
+            NoteManager.exportAllNotes();
         }
         return true;
     }

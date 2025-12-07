@@ -34,7 +34,7 @@ public class DisplayNote extends AppCompatActivity {
         setContentView(R.layout.activity_display_note);
 
         creatingNewNote = getIntent().getBooleanExtra(
-                MainActivity.EXTRA_NEWNOTE,
+                MainActivity.EXTRA_IS_NEW_NOTE,
                 true);
         if (!creatingNewNote) {
             noteTitle = getIntent().getStringExtra(
