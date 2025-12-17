@@ -30,12 +30,17 @@ Deleting a note can be done from the main list of notes view
 1. A notification will popup showing you the path to your note, a note will
    be available from the *noteal* directory in your SDCards root directory.
   - If you had a title of *shopping* for a note you exported, then you
-    should be able to find it at /noteal/noteal-shopping.txt
+    should be able to find it at 
+    /Android/data/developingAlex.Noteal/files/noteal-shopping.txt
 
 ## Issues to resolve
 
-- when you want to back up all your notes you have to enter each one and tap
-  export, better if there were an export all option
+- when you export all the notes there is no notification that anything happened
+  it would be better if there were a toast message that got displayed and 
+  displayed where to find the exported files, eg. 
+  /Android/data/developingAlex.Noteal/files
+- give the option to export notes to the shared storage, like the Downloads
+  folder so that it is more accessible
 - the app allows multiple notes with the same title but this is confusing it
   should prevent that somehow.
 - when you accumulate many notes, newer ones are added to the end of the 
