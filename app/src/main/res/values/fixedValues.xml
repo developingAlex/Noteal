@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <integer name="BYTE_VALUE_DELIMITER_FOR_SPLITTING_NOTE_FILES_TITLE_AND_CONTENT">2</integer>
-</resources>

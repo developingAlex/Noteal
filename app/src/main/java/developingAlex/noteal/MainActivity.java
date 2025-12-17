@@ -30,7 +30,12 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         System.out.println(getString(R.string.welcome_message));
-        nm = new NoteManager(this.getBaseContext(), this);
+        try {
+            nm = new NoteManager(this.getBaseContext(), this);
+        } catch (NoteManagerException e) {
+            myToast("There was a fatal error while trying to initialise app: " + e.getMessage(), Toast.LENGTH_LONG);
+        }
+
 
         //pull in the list of note files and titles to display in the list of notes.
 //		Call to read from the set file and return an array.
@@ -128,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         switch(which){
             case DialogInterface.BUTTON_POSITIVE: //yes
                 if(indexOfNoteToDelete != -1){
-                    myToast("Deleted " + getNotesTitles(NoteManager.getNotesArray()).get(indexOfNoteToDelete),1);
+                    myToast("Deleted " + getNotesTitles(NoteManager.getNotesArray()).get(indexOfNoteToDelete),Toast.LENGTH_SHORT);
                     deleteNote(indexOfNoteToDelete);
                 }
                 break;
@@ -145,7 +150,11 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     //method to call to delete a note at a certain location in the list, list starts at position 0
     private void deleteNote(int listPosition){
         //remove from the note list and update the view, remove from the index file and delete off file system.
-        NoteManager.removeNote(listPosition);
+        try {
+            NoteManager.removeNote(listPosition);
+        } catch (NoteManagerException e) {
+            myToast(e.getMessage(), Toast.LENGTH_LONG);
+        }
         updateList();
 
     }
@@ -168,20 +177,25 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
             startActivity(intent);
         }
         else if (item.getItemId()==R.id.action_export_all){
-            NoteManager.exportAllNotes();
-            myToast("Notes exported to /Android/data/developingAlex.Noteal/files/", 2);
+            try {
+                NoteManager.exportAllNotes();
+                myToast("Notes exported to /Android/data/developingAlex.Noteal/files/", Toast.LENGTH_LONG);
+            } catch (NoteManagerException e) {
+                myToast("There was an error while trying to export all notes: " + e.getMessage(), Toast.LENGTH_LONG);
+            }
         }
         return true;
     }
 
 
-    private void myToast(String msg, int lengthOfTime){
-        if (lengthOfTime==2){
-            Toast.makeText(this.getBaseContext(), msg, Toast.LENGTH_LONG).show();
-        }
-        if(lengthOfTime==1){
-            Toast.makeText(this.getBaseContext(), msg, Toast.LENGTH_SHORT).show();
-        }
+    /**
+     * Custom method to display a Toast message
+     *
+     * @param message message to display
+     * @param duration Toast.LENGTH_LONG or Toast.LENGTH_SHORT
+     */
+    private void myToast(String message, int duration){
+        Toast.makeText(this.getBaseContext(), message, duration).show();
     }
 
 }

@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -46,14 +45,12 @@ public class DisplayNote extends AppCompatActivity {
             System.out.println("noteTitle = " + noteTitle);
             System.out.println("noteFile = " + noteFile);
 
-            ArrayList<String> note = NoteManager.loadNote(noteFile);
-            if (note.size() != 2) {
-                myToast("Bad error: note was meant to be composed of title " +
-                        "and contents, (2 things) ...didn't find 2 things..",
-                        1);
-            } else {
+            try {
+                ArrayList<String> note = NoteManager.loadNote(noteFile);
                 ((EditText)findViewById(R.id.title_text)).setText(note.get(0));
                 ((EditText)findViewById(R.id.body_text)).setText(note.get(1));
+            } catch (NoteManagerException e) {
+                myToast(e.getMessage(), Toast.LENGTH_LONG);
             }
         } else {
             System.out.println("new Note...");
@@ -82,13 +79,8 @@ public class DisplayNote extends AppCompatActivity {
         String content = ((EditText)findViewById(R.id.body_text))
                 .getText()
                 .toString();
-        if (!(content.length() == 0 || title.length() == 0)) {
-            /**
-             * only save when back is pressed if a title and contents are
-             * present, otherwise disregard.
-             * (using length because to use isEmpty() requires api lvl 9 or
-             * higher)
-             */
+        // Only save if a title and contents are present, otherwise disregard.
+        if (!(content.isEmpty() || title.isEmpty())) {
             saveNoteToAppStorage();
         }
         Intent intent = new Intent(this, MainActivity.class);
@@ -137,7 +129,7 @@ public class DisplayNote extends AppCompatActivity {
                         myToast("Cannot export note with that title, please " +
                                         "change title to consist of simple english " +
                                         "characters and numbers",
-                                2);
+                                Toast.LENGTH_LONG);
                         return true;
                     }
                     // TODO: prompt user to overwrite any existing file with same
@@ -149,9 +141,9 @@ public class DisplayNote extends AppCompatActivity {
                     );
                     String result = exportNoteToSDCard(content, file);
                     if (result == "success") {
-                        myToast("Note saved to: " + file.getAbsolutePath(), 2);
+                        myToast("Note saved to: " + file.getAbsolutePath(), Toast.LENGTH_LONG);
                     } else {
-                        myToast(result, 2);
+                        myToast(result, Toast.LENGTH_LONG);
                     }
                 }
                 return true;
@@ -172,7 +164,7 @@ public class DisplayNote extends AppCompatActivity {
         } else {
             myToast("Unable to write to SD card because SD media is not " +
                     "mounted.\nExternal storage state:" + state,
-                    2);
+                    Toast.LENGTH_LONG);
             return false;
         }
     }
@@ -233,7 +225,7 @@ public class DisplayNote extends AppCompatActivity {
                 .toString();
         if (title.compareTo("") == 0) {
             System.out.println("You need a title to save!");
-            myToast("You need a title to save!", 1);
+            myToast("You need a title to save!", Toast.LENGTH_SHORT);
             return false;
         }
 
@@ -243,7 +235,7 @@ public class DisplayNote extends AppCompatActivity {
                 .toString();
         if (content.compareTo("") == 0) {
             System.out.println("You need content to save!");
-            myToast("You need content to save!", 1);
+            myToast("You need content to save!", Toast.LENGTH_SHORT);
             return false;
         }
 
@@ -280,77 +272,43 @@ public class DisplayNote extends AppCompatActivity {
 
         /* construct the entire string to write to the filesystem file:
          * content: note_title + note_content; */
-        int fileDelimiter = this.getApplicationContext()
-                .getResources()
-                .getInteger(
-                        R.integer.BYTE_VALUE_DELIMITER_FOR_SPLITTING_NOTE_FILES_TITLE_AND_CONTENT);
         String entireContent = title +
-                String.valueOf((char)fileDelimiter) +
+                String.valueOf((char)NoteManager.NOTE_FILE_DELIMITER) +
                 content;
 
-        // save the entire string to file with file name:fileName
-        myTextToFile(entireContent, fileName);
+        // save the entire string to file named fileName
+        try {
+            NoteManager.saveTextToFile(entireContent, fileName);
+        } catch (NoteManagerException e) {
+            myToast("Failed to save note to file: " + e.getMessage(), Toast.LENGTH_LONG);
+        }
+
         noteFile = fileName;
+
         noteTitle = title;
 
         // update the List file with the new addition;
-        if (creatingNewNote) {
-            NoteManager.addNote(title, fileName);
-            creatingNewNote = false;
-            /* otherwise when creating a new note, multiple saves will result
-            * in multiple files. */
-        } else {
-            NoteManager.updateTitle(fileName, title);
-        }
-
-        return true;
-    }
-
-    /**
-     * Saves the given content to the given filename as a textfile in the
-     * application's internal storage
-     *
-     * @param content the bytes content of the file
-     * @param fileNameArg the filename to use
-     */
-    private void myTextToFile(String content, String fileNameArg) {
         try {
-            FileOutputStream fos = this.getBaseContext()
-                    .openFileOutput(fileNameArg, Context.MODE_PRIVATE);
-            fos.write(content.getBytes());
-            fos.flush();
-            fos.close();
-            System.out.println("Successfully wrote note file: " + fileNameArg);
-        } catch (Exception e) {
-            myToast("Failed to save note to file...", 1);
-            if (e.getMessage()!=null) {
-                myToast(e.getMessage(), 2);
+            if (creatingNewNote) {
+                NoteManager.addNote(title, fileName);
+
+                creatingNewNote = false;
+            } else {
+                    NoteManager.updateTitle(fileName, title);
             }
-            System.exit(2);
+        } catch (NoteManagerException e) {
+            myToast(e.getMessage(), Toast.LENGTH_LONG);
         }
+        return true;
     }
 
     /**
      * Custom method to display a Toast message
      *
-     * @param msg message to display
-     * @param lengthOfTime integer either 1 for short time or 2 for longer
+     * @param message message to display
+     * @param duration Toast.LENGTH_LONG or Toast.LENGTH_SHORT
      */
-    private void myToast(String msg, int lengthOfTime){
-        if (lengthOfTime == 2) {
-            Toast.makeText(
-                    this.getBaseContext(),
-                    msg,
-                    Toast.LENGTH_LONG)
-                            .show();
-        }
-
-        if (lengthOfTime == 1) {
-            Toast.makeText(
-                    this.getBaseContext(),
-                    msg,
-                    Toast.LENGTH_SHORT)
-                            .show();
-        }
+    private void myToast(String message, int duration){
+        Toast.makeText(this.getBaseContext(), message, duration).show();
     }
 }
