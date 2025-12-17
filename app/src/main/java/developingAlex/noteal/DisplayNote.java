@@ -334,10 +334,10 @@ public class DisplayNote extends AppCompatActivity {
      * Custom method to display a Toast message
      *
      * @param msg message to display
-     * @param length_of_time integer either 1 for short time or 2 for longer
+     * @param lengthOfTime integer either 1 for short time or 2 for longer
      */
-    private void myToast(String msg, int length_of_time){
-        if (length_of_time == 2) {
+    private void myToast(String msg, int lengthOfTime){
+        if (lengthOfTime == 2) {
             Toast.makeText(
                     this.getBaseContext(),
                     msg,
@@ -345,7 +345,7 @@ public class DisplayNote extends AppCompatActivity {
                             .show();
         }
 
-        if (length_of_time == 1) {
+        if (lengthOfTime == 1) {
             Toast.makeText(
                     this.getBaseContext(),
                     msg,

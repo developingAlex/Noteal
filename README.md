@@ -35,10 +35,6 @@ Deleting a note can be done from the main list of notes view
 
 ## Issues to resolve
 
-- when you export all the notes there is no notification that anything happened
-  it would be better if there were a toast message that got displayed and 
-  displayed where to find the exported files, eg. 
-  /Android/data/developingAlex.Noteal/files
 - give the option to export notes to the shared storage, like the Downloads
   folder so that it is more accessible
 - the app allows multiple notes with the same title but this is confusing it

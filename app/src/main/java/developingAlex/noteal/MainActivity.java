@@ -169,16 +169,17 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         }
         else if (item.getItemId()==R.id.action_export_all){
             NoteManager.exportAllNotes();
+            myToast("Notes exported to /Android/data/developingAlex.Noteal/files/", 2);
         }
         return true;
     }
 
 
-    private void myToast(String msg, int length_of_time){
-        if (length_of_time==2){
+    private void myToast(String msg, int lengthOfTime){
+        if (lengthOfTime==2){
             Toast.makeText(this.getBaseContext(), msg, Toast.LENGTH_LONG).show();
         }
-        if(length_of_time==1){
+        if(lengthOfTime==1){
             Toast.makeText(this.getBaseContext(), msg, Toast.LENGTH_SHORT).show();
         }
     }

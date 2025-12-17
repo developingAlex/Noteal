@@ -264,11 +264,11 @@ public final class NoteManager {
     }
 
 
-    private static void myToast(String msg, int length_of_time){
-        if (length_of_time == 2){
+    private static void myToast(String msg, int lengthOfTime){
+        if (lengthOfTime == 2){
             Toast.makeText(MainActivityContext, msg, Toast.LENGTH_LONG).show();
         }
-        if(length_of_time == 1){
+        if(lengthOfTime == 1){
             Toast.makeText(MainActivityContext, msg, Toast.LENGTH_SHORT).show();
         }
     }
