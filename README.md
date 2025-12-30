@@ -37,8 +37,6 @@ Deleting a note can be done from the main list of notes view
 
 - give the option to export notes to the shared storage, like the Downloads
   folder so that it is more accessible
-- the app allows multiple notes with the same title but this is confusing it
-  should prevent that somehow.
 - when you accumulate many notes, newer ones are added to the end of the 
   list, it would be better if the list were always sorted by most recently
   modified

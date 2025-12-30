@@ -28,13 +28,6 @@ public final class NoteManager {
         mainActivity = ma;
     }
 
-
-    public static Context getContext(){
-        return MainActivityContext;
-    }
-
-
-
     public static void updateTitle(int position, String newTitle) throws NoteManagerException {
         notesArray.set(position, newTitle);
         saveIndexToFile();
@@ -45,16 +38,51 @@ public final class NoteManager {
      * find which filename/note it's talking about and then update the title.
      * remember the format of the notesArray is {title, filename, ..., title, filename} // TODO This should be a list of {title,filename} constructs to clarify.
      * so find the position of the filename, then alter the value of the position preceding that.
-     * @param filename
+     * @param fileName
      * @param newTitle
      * @throws NoteManagerException
      */
-    public static void updateTitle(String filename, String newTitle) throws NoteManagerException {
-        for(int i = 1; i < notesArray.size(); i += 2){
-            if (notesArray.get(i).compareTo(filename) == 0){
-                updateTitle(i - 1, newTitle);
+    public static void updateTitle(String fileName, String newTitle) throws NoteManagerException {
+        for (int i = 1; i < notesArray.size(); i += 2) {
+            if (notesArray.get(i).compareTo(fileName) == 0) {
+                updateTitle(i - 1, deDuplicateTitle(newTitle, fileName));
                 break;
             }
+        }
+    }
+
+    /**
+     * Checks if a title already exists
+     * @param title
+     * @param fileName
+     * @return a boolean, true if so, false otherwise
+     */
+    private static boolean titleAlreadyExists(String title, String fileName) {
+        for (int i = 0; i < notesArray.size(); i += 2) {
+            if (notesArray.get(i).compareTo(title) == 0 && (notesArray.get(i + 1).compareTo(fileName) != 0)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * generates a title that will be unique by appending a number to it, for example if there is
+     * already a note with the title "todo" this will return "todo_1" and if that also already
+     * exists, it will return "todo_2".
+     * @param title the proposed title
+     * @param fileName the associated filename to avoid considering the actual entry as a duplicate
+     * @return the title or an amended form such that it will be a unique title
+     */
+    public static String deDuplicateTitle(String title, String fileName) {
+        if (!titleAlreadyExists(title, fileName)) {
+            return title;
+        } else {
+            int suffix = 1;
+            while (titleAlreadyExists(title + '_' + suffix, fileName)) {
+                suffix ++;
+            }
+            return title + '_' + suffix;
         }
     }
 
@@ -91,7 +119,7 @@ public final class NoteManager {
      */
     public static void addNote (String title, String fileName) throws NoteManagerException{
         //add the new note title and fileName;
-        notesArray.add(title);
+        notesArray.add(deDuplicateTitle(title, fileName));
         notesArray.add(fileName);
         saveIndexToFile();
         mainActivity.updateList();
@@ -105,11 +133,11 @@ public final class NoteManager {
      */
     public static void removeNote(int position) throws NoteManagerException {
         notesArray.remove(position * 2); //remove twice the same position; first time it's the note's title
-        String filename = notesArray.get(position * 2);
+        String fileName = notesArray.get(position * 2);
         notesArray.remove(position * 2);// second time is the note's file
         saveIndexToFile();
         //remove the note from the filesystem too:
-        File fileToDelete = mainActivity.getBaseContext().getFileStreamPath(filename);
+        File fileToDelete = mainActivity.getBaseContext().getFileStreamPath(fileName);
         if (fileToDelete.exists()) {
             System.out.println("The file was found and will be deleted");
             if (fileToDelete.delete()) {
@@ -146,11 +174,11 @@ public final class NoteManager {
      * application's internal storage
      *
      * @param content the bytes content of the file
-     * @param fileNameArg the filename to use
+     * @param fileName the filename to use
      */
-    public static void saveTextToFile(String content, String fileNameArg) throws NoteManagerException {
+    public static void saveTextToFile(String content, String fileName) throws NoteManagerException {
         try{
-            FileOutputStream fos = MainActivityContext.openFileOutput(fileNameArg, Context.MODE_PRIVATE);
+            FileOutputStream fos = MainActivityContext.openFileOutput(fileName, Context.MODE_PRIVATE);
             fos.write(content.getBytes());
             fos.flush();
             fos.close();
@@ -162,21 +190,21 @@ public final class NoteManager {
 
     /**
      * loadNote takes a filename argument and attempts to open and read the contents of that
-     * filename in the applications internal private storage, if it can read the content it treats
+     * file in the applications internal private storage, if it can read the content it treats
      * a byte of a value of 2 as the delimiter between Title and Content. It then returns a String
      * Arraylist of 2 elements, the first being the note's title, the second being the note's
      * content, if from reading the file there is no byte delimiter of a value of 2 then it will
      * return a value of null.
-     * @param filename
+     * @param fileName
      * @return Arraylist of length 2 where first item is the title and second is the content, or null
      */
-    public static ArrayList<String> loadNote(String filename) throws NoteManagerException {
+    public static ArrayList<String> loadNote(String fileName) throws NoteManagerException {
         ArrayList<String> note = new ArrayList<String>();
         String title, content;
         title = "";
         content = "";
         try{
-            FileInputStream fis = MainActivityContext.openFileInput(filename);
+            FileInputStream fis = MainActivityContext.openFileInput(fileName);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fis, "UTF8"));
             int nextByte = bufferedReader.read();
             //read the title:

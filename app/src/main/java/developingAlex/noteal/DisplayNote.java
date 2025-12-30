@@ -252,27 +252,29 @@ public class DisplayNote extends AppCompatActivity {
             fileName = UUID.randomUUID().toString();
 
 
-            /* if fileName is already taken in the list of notes, append 1 or
-             * something... */
-            File testExistence = this.getBaseContext()
+            /* probably overkill, but if the random UUID fileName is already taken in the list of
+             notes, generate another one */
+            File filePath = this.getBaseContext()
                     .getFileStreamPath(fileName);
             System.out.println(
                     "testing the existence of the file: " + fileName);
             int i = 1;
-            while (testExistence.exists()) {
+            while (filePath.exists()) {
                 System.out.println("File ALREADY EXISTS!!!!!!");
                 fileName = UUID.randomUUID().toString(); /* that filename is
                                                           * taken so generate
                                                           * another */
                 i++;
-                testExistence = this.getBaseContext()
+                filePath = this.getBaseContext()
                         .getFileStreamPath(fileName);
             }
         }
 
         /* construct the entire string to write to the filesystem file:
          * content: note_title + note_content; */
-        String entireContent = title +
+        // Todo: why am I writing the title into the file as well? its' already tracked by the
+        //  note array.
+        String entireContent = NoteManager.deDuplicateTitle(title, fileName) +
                 String.valueOf((char)NoteManager.NOTE_FILE_DELIMITER) +
                 content;
 
